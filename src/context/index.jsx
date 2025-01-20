@@ -10,6 +10,8 @@ export const ShoppingCartContext = createContext(null);
 function ShoppingCartProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [listOfProducts, setListOfProducts] = useState([]);
+  const [productDetails, setProductDetails] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
 
   async function fetchListOfProducts() {
     const apiResponse = await fetch("https://dummyjson.com/products");
@@ -22,12 +24,36 @@ function ShoppingCartProvider({ children }) {
     }
   }
 
+  function handleAddToCart(getProductDetails) {
+    let cpyExistingCartItems = [...cartItems];
+    const findIndexOfCurrentIttem = cpyExistingCartItems.findIndex(
+      (cartItem) => cartItem.id === getProductDetails.id
+    );
+    if(findIndexOfCurrentIttem === -1){
+      cpyExistingCartItems.push({
+        ...getProductDetails,
+        quantity: 1,
+        totalPrice: getProductDetails?.price
+      })
+    }
+  }
+
+
   useEffect(() => {
     fetchListOfProducts();
   }, []);
 
   return (
-    <ShoppingCartContext.Provider value={{ listOfProducts, loading }}>
+    <ShoppingCartContext.Provider
+      value={{
+        listOfProducts,
+        loading,
+        setLoading,
+        productDetails,
+        setProductDetails,
+        handleAddToCart,
+      }}
+    >
       {children}
     </ShoppingCartContext.Provider>
   );
