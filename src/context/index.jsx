@@ -29,18 +29,22 @@ function ShoppingCartProvider({ children }) {
     const findIndexOfCurrentIttem = cpyExistingCartItems.findIndex(
       (cartItem) => cartItem.id === getProductDetails.id
     );
-    if(findIndexOfCurrentIttem === -1){
+    if (findIndexOfCurrentIttem === -1) {
       cpyExistingCartItems.push({
         ...getProductDetails,
         quantity: 1,
-        totalPrice: getProductDetails?.price
-      })
+        totalPrice: getProductDetails?.price,
+      });
+    } else {
     }
-  }
+    setCartItems(cpyExistingCartItems);
 
+    localStorage.setItem("cartItems", JSON.stringify(cpyExistingCartItems));
+  }
 
   useEffect(() => {
     fetchListOfProducts();
+    setCartItems(JSON.parse(localStorage.getItem("cartItems") || []));
   }, []);
 
   return (
@@ -52,6 +56,7 @@ function ShoppingCartProvider({ children }) {
         productDetails,
         setProductDetails,
         handleAddToCart,
+        cartItems,
       }}
     >
       {children}
