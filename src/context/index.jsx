@@ -26,25 +26,52 @@ function ShoppingCartProvider({ children }) {
 
   function handleAddToCart(getProductDetails) {
     let cpyExistingCartItems = [...cartItems];
-    const findIndexOfCurrentIttem = cpyExistingCartItems.findIndex(
+    const findIndexOfCurrentItem = cpyExistingCartItems.findIndex(
       (cartItem) => cartItem.id === getProductDetails.id
     );
-    if (findIndexOfCurrentIttem === -1) {
+    if (findIndexOfCurrentItem === -1) {
       cpyExistingCartItems.push({
         ...getProductDetails,
         quantity: 1,
         totalPrice: getProductDetails?.price,
       });
     } else {
+      cpyExistingCartItems[findIndexOfCurrentItem] = {
+        ...cpyExistingCartItems[findIndexOfCurrentItem],
+        quantity: cpyExistingCartItems[findIndexOfCurrentItem].quantity + 1,
+        totalPrice:
+          (cpyExistingCartItems[findIndexOfCurrentItem].quantity + 1) *
+          cpyExistingCartItems[findIndexOfCurrentItem].price,
+      };
     }
     setCartItems(cpyExistingCartItems);
 
     localStorage.setItem("cartItems", JSON.stringify(cpyExistingCartItems));
   }
+  function removeFromCart(getProductDetails, isFullyRemoveFromCart) {
+    let cpyExistingCartItems = [...cartItems];
+    const findIndexOfCurrentCartItem = cpyExistingCartItems.findIndex(
+      (item) => item.id === getProductDetails.id
+    );
+    if (isFullyRemoveFromCart) {
+      cpyExistingCartItems.splice(findIndexOfCurrentCartItem, 1);
+    } else {
+      cpyExistingCartItems[findIndexOfCurrentCartItem] = {
+        ...cpyExistingCartItems[findIndexOfCurrentCartItem],
+        quantity: cpyExistingCartItems[findIndexOfCurrentCartItem].quantity - 1,
+        totalPrice:
+          (cpyExistingCartItems[findIndexOfCurrentCartItem].quantity - 1) *
+          cpyExistingCartItems[findIndexOfCurrentCartItem].price,
+      };
+    }
+    localStorage.setItem("cartItems", JSON.stringify(cpyExistingCartItems));
+    setCartItems(cpyExistingCartItems);
+    console.log(getProductDetails, cpyExistingCartItems);
+  }
 
   useEffect(() => {
     fetchListOfProducts();
-    setCartItems(JSON.parse(localStorage.getItem("cartItems") || []));
+    setCartItems(JSON.parse(localStorage.getItem("cartItems") || "[]"));
   }, []);
 
   return (
@@ -57,6 +84,7 @@ function ShoppingCartProvider({ children }) {
         setProductDetails,
         handleAddToCart,
         cartItems,
+        removeFromCart,
       }}
     >
       {children}

@@ -11,6 +11,7 @@ const ProductDetailsPage = () => {
     loading,
     setLoading,
     handleAddToCart,
+    cartItems,
   } = useContext(ShoppingCartContext);
   const navigate = useNavigate();
 
@@ -69,8 +70,13 @@ const ProductDetailsPage = () => {
             </div>
             <div className="flex gap-4 justify-center ">
               <button
+                disabled={
+                  cartItems.findIndex(
+                    (item) => item.id === productDetails?.id
+                  ) > -1
+                }
                 onClick={() => handleAddToCart(productDetails)}
-                className=" mt-5 min-w-[200px] px-4 py-3 border border-[#999] bg-transparent text-sm font-semibold rounded"
+                className="disabled:opacity-65 mt-5 min-w-[200px] px-4 py-3 border border-[#999] bg-transparent text-sm font-semibold rounded"
               >
                 Add to Cart
               </button>
